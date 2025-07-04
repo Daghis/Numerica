@@ -74,6 +74,7 @@
 .message-box {
   grid-area: message-box;
   justify-self: center;
+  height: 2em; /* Increased fixed height for message box */
 }
 
 .main-menu-button-box {
@@ -102,6 +103,16 @@ button {
 
 .main-menu-button:hover {
   background-color: #0056b3;
+}
+
+.main-menu-button:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.message.hidden {
+  color: transparent;
 }
 
 /* Remove previous layout styles */

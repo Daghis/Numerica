@@ -122,6 +122,7 @@ function App() {
       setAreButtonsClickable(true); // Enable buttons for new level
       setLastPressedButtonId(null); // Reset last pressed button for new level
       setMovesHistory([]); // Reset move history for new level
+      setMessage(''); // Clear message when starting a new level
 
       if (level === 1) {
         setButtons([{ id: 1, label: '1', state: 'pressable' }]);
@@ -170,14 +171,6 @@ function App() {
             const newUnlocked = new Set([...prev, level + 1]);
             return Array.from(newUnlocked).sort((a, b) => a - b);
           });
-          setTimeout(() => {
-            if (level + 1 > totalLevels) {
-              setGameState('menu');
-            } else {
-              setLevel(prevLevel => prevLevel + 1);
-            }
-            setMessage('');
-          }, 1500);
         }
         return newButtons;
       } else {
@@ -199,6 +192,14 @@ function App() {
         return newButtons;
       }
     });
+  };
+
+  const handleNextLevel = () => {
+    if (level + 1 <= totalLevels) {
+      setLevel(prevLevel => prevLevel + 1);
+    } else {
+      setGameState('menu'); // Go back to menu if all levels are completed
+    }
   };
 
   const handleStartGame = () => {
@@ -255,7 +256,16 @@ function App() {
             </div>
           </div>
           <div className="grid-item message-box"><p className={`message ${message.includes('Error') ? 'error' : ''} ${message ? '' : 'hidden'}`}>{message}</p></div>
-          <div className="grid-item main-menu-button-box"><button onClick={() => setGameState('menu')} className="main-menu-button">Main Menu</button></div>
+          <div className="grid-item main-menu-button-box">
+            <button
+              onClick={handleNextLevel}
+              disabled={!levelCompletedRef.current || level + 1 > totalLevels}
+              className="main-menu-button"
+            >
+              Next Level
+            </button>
+            <button onClick={() => setGameState('menu')} className="main-menu-button">Main Menu</button>
+          </div>
         </div>
       )}
     </div>
