@@ -14,6 +14,40 @@ interface ButtonData {
   state: ButtonState;
 }
 
+interface MovePredicate { (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]): boolean; }
+interface CompletionPredicate { (currentButtons: ButtonData[], movesHistory: number[]): boolean; }
+
+interface LevelDefinition {
+  movePredicate: MovePredicate;
+  completionPredicate: CompletionPredicate;
+}
+
+const levelDefinitions: { [key: number]: LevelDefinition } = {
+  1: {
+    movePredicate: (buttonId, currentButtons, movesHistory) => true, // Any move is legal
+    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+  },
+  2: {
+    movePredicate: (buttonId, currentButtons, movesHistory) => true, // Any move is legal
+    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+  },
+  3: {
+    movePredicate: (buttonId, currentButtons, movesHistory) => {
+      const nextExpected = movesHistory.length === 0 ? 1 : movesHistory[movesHistory.length - 1] + 1;
+      return buttonId === nextExpected;
+    },
+    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+  },
+  4: {
+    movePredicate: (buttonId, currentButtons, movesHistory) => {
+      if (movesHistory.length === 0) return true; // First move is always legal
+      const lastPressedButtonId = movesHistory[movesHistory.length - 1];
+      return !(buttonId === lastPressedButtonId - 1 || buttonId === lastPressedButtonId + 1);
+    },
+    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+  },
+};
+
 function App() {
   const [gameState, setGameState] = useState<'menu' | 'playing'>('menu');
   const [mainMenuSubView, setMainMenuSubView] = useState<'main' | 'levelSelect'>('main');
@@ -22,6 +56,7 @@ function App() {
   const [message, setMessage] = useState('');
   const [areButtonsClickable, setAreButtonsClickable] = useState(true);
   const [lastPressedButtonId, setLastPressedButtonId] = useState<number | null>(null);
+  const [movesHistory, setMovesHistory] = useState<number[]>([]); // New state for move history
   const levelCompletedRef = useRef(false);
 
   const [unlockedLevels, setUnlockedLevels] = useState<number[]>(() => {
@@ -42,6 +77,7 @@ function App() {
       levelCompletedRef.current = false; // Reset on level change
       setAreButtonsClickable(true); // Enable buttons for new level
       setLastPressedButtonId(null); // Reset last pressed button for new level
+      setMovesHistory([]); // Reset move history for new level
 
       if (level === 1) {
         setButtons([{ id: 1, label: '1', state: 'pressable' }]);
@@ -63,107 +99,13 @@ function App() {
   const handleButtonClick = (buttonId: number) => {
     if (!areButtonsClickable) return; // Prevent clicks if buttons are not clickable
 
+    const levelDef = levelDefinitions[level];
+    if (!levelDef) return; // Should not happen
+
     setButtons(prevButtons => {
-      if (level === 3) {
-        const currentNextExpected = prevButtons.filter(button => button.state === 'was-pressed').length + 1;
+      const isMoveLegal = levelDef.movePredicate(buttonId, prevButtons, movesHistory);
 
-        if (buttonId === currentNextExpected) {
-          // Correct button pressed
-          const newButtons = prevButtons.map(button => {
-            if (button.id === buttonId) {
-              return { ...button, state: 'was-pressed' as ButtonState };
-            }
-            return button;
-          });
-
-          const allPressed = newButtons.filter(button => button.state === 'was-pressed').length === 5;
-          if (allPressed && !levelCompletedRef.current) {
-            levelCompletedRef.current = true;
-            setMessage(`Level ${level} Complete!`);
-            setAreButtonsClickable(false); // Disable buttons after completion
-            setUnlockedLevels(prev => {
-              const newUnlocked = new Set([...prev, level + 1]);
-              return Array.from(newUnlocked).sort((a, b) => a - b);
-            });
-            setTimeout(() => {
-              if (level + 1 > totalLevels) {
-                setGameState('menu');
-              } else {
-                setLevel(prevLevel => prevLevel + 1);
-              }
-              setMessage('');
-            }, 1500);
-          }
-          return newButtons;
-        } else {
-          // Incorrect button pressed
-          setMessage('Error: Incorrect button pressed! Level restarting...');
-          setAreButtonsClickable(false); // Disable buttons on error
-          const newButtons = prevButtons.map(button => {
-            if (button.id === buttonId) {
-              return { ...button, state: 'error' as ButtonState };
-            }
-            return button;
-          });
-          setTimeout(() => {
-            setButtons(prevButtons.map(button => ({ ...button, state: 'pressable' })));
-            setMessage('');
-            setAreButtonsClickable(true); // Re-enable buttons after reset
-          }, 1500);
-          return newButtons;
-        }
-      } else if (level === 4) {
-        const isAdjacent = lastPressedButtonId !== null &&
-                           (buttonId === lastPressedButtonId - 1 || buttonId === lastPressedButtonId + 1);
-
-        if (isAdjacent) {
-          // Incorrect button pressed (adjacent)
-          setMessage('Error: Cannot press adjacent button! Level restarting...');
-          setAreButtonsClickable(false); // Disable buttons on error
-          const newButtons = prevButtons.map(button => {
-            if (button.id === buttonId) {
-              return { ...button, state: 'error' as ButtonState };
-            }
-            return button;
-          });
-          setTimeout(() => {
-            setButtons(prevButtons.map(button => ({ ...button, state: 'pressable' })));
-            setLastPressedButtonId(null);
-            setMessage('');
-            setAreButtonsClickable(true); // Re-enable buttons after reset
-          }, 1500);
-          return newButtons;
-        } else {
-          // Correct button pressed (non-adjacent or first press)
-          const newButtons = prevButtons.map(button => {
-            if (button.id === buttonId) {
-              return { ...button, state: 'was-pressed' as ButtonState };
-            }
-            return button;
-          });
-          setLastPressedButtonId(buttonId);
-
-          const allPressed = newButtons.filter(button => button.state === 'was-pressed').length === 5;
-          if (allPressed && !levelCompletedRef.current) {
-            levelCompletedRef.current = true;
-            setMessage(`Level ${level} Complete!`);
-            setAreButtonsClickable(false); // Disable buttons after completion
-            setUnlockedLevels(prev => {
-              const newUnlocked = new Set([...prev, level + 1]);
-              return Array.from(newUnlocked).sort((a, b) => a - b);
-            });
-            setTimeout(() => {
-              if (level + 1 > totalLevels) {
-                setGameState('menu');
-              } else {
-                setLevel(prevLevel => prevLevel + 1);
-              }
-              setMessage('');
-            }, 1500);
-          }
-          return newButtons;
-        }
-      } else { // Logic for Level 1 and Level 2
+      if (isMoveLegal) {
         const newButtons = prevButtons.map(button => {
           if (button.id === buttonId) {
             return { ...button, state: 'was-pressed' as ButtonState };
@@ -171,8 +113,11 @@ function App() {
           return button;
         });
 
-        const allPressed = newButtons.every(button => button.state === 'was-pressed');
-        if (allPressed && !levelCompletedRef.current) {
+        setMovesHistory(prevHistory => [...prevHistory, buttonId]);
+
+        const isLevelCompleted = levelDef.completionPredicate(newButtons, movesHistory);
+
+        if (isLevelCompleted && !levelCompletedRef.current) {
           levelCompletedRef.current = true; // Mark level as completed
           setMessage(`Level ${level} Complete!`);
           setAreButtonsClickable(false); // Disable buttons after completion
@@ -189,6 +134,23 @@ function App() {
             setMessage('');
           }, 1500);
         }
+        return newButtons;
+      } else {
+        // Incorrect button pressed
+        setMessage('Error: Incorrect button pressed! Level restarting...');
+        setAreButtonsClickable(false); // Disable buttons on error
+        const newButtons = prevButtons.map(button => {
+          if (button.id === buttonId) {
+            return { ...button, state: 'error' as ButtonState };
+          }
+          return button;
+        });
+        setTimeout(() => {
+          setButtons(prevButtons.map(button => ({ ...button, state: 'pressable' })));
+          setMovesHistory([]); // Reset move history on error
+          setMessage('');
+          setAreButtonsClickable(true); // Re-enable buttons after reset
+        }, 1500);
         return newButtons;
       }
     });
