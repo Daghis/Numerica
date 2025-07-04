@@ -31,7 +31,7 @@ interface LevelDefinition {
 
 const alwaysTrueMovePredicate: MovePredicate = Object.assign(
   (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => true,
-  { description: 'Any button can be pressed.' }
+  { /* No description for this predicate */ }
 );
 
 const sequentialMovePredicate: MovePredicate = Object.assign(
