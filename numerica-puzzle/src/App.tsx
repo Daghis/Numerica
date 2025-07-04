@@ -14,37 +14,57 @@ interface ButtonData {
   state: ButtonState;
 }
 
-interface MovePredicate { (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]): boolean; }
-interface CompletionPredicate { (currentButtons: ButtonData[], movesHistory: number[]): boolean; }
+interface MovePredicate {
+  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]): boolean;
+  description: string;
+}
+
+interface CompletionPredicate {
+  (currentButtons: ButtonData[], movesHistory: number[]): boolean;
+  description: string;
+}
 
 interface LevelDefinition {
   movePredicate: MovePredicate;
   completionPredicate: CompletionPredicate;
 }
 
+const sequentialMovePredicate: MovePredicate = Object.assign(
+  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => {
+    const nextExpected = movesHistory.length === 0 ? 1 : movesHistory[movesHistory.length - 1] + 1;
+    return buttonId === nextExpected;
+  },
+  { description: 'Buttons must be pressed in sequential order.' }
+);
+
+const nonAdjacentMovePredicate: MovePredicate = Object.assign(
+  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => {
+    if (movesHistory.length === 0) return true; // First move is always legal
+    const lastPressedButtonId = movesHistory[movesHistory.length - 1];
+    return !(buttonId === lastPressedButtonId - 1 || buttonId === lastPressedButtonId + 1);
+  },
+  { description: 'Buttons must be pressed in a non-adjacent order.' }
+);
+
+const allButtonsPressedCompletionPredicate: CompletionPredicate = Object.assign(
+  (currentButtons: ButtonData[]) => currentButtons.every(button => button.state === 'was-pressed'),
+  { description: 'All buttons must be pressed.' }
+);
+
 const levelDefinitions: { [key: number]: LevelDefinition } = {
   1: {
-    movePredicate: (buttonId, currentButtons, movesHistory) => true, // Any move is legal
-    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+    completionPredicate: allButtonsPressedCompletionPredicate,
   },
   2: {
-    movePredicate: (buttonId, currentButtons, movesHistory) => true, // Any move is legal
-    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+    completionPredicate: allButtonsPressedCompletionPredicate,
   },
   3: {
-    movePredicate: (buttonId, currentButtons, movesHistory) => {
-      const nextExpected = movesHistory.length === 0 ? 1 : movesHistory[movesHistory.length - 1] + 1;
-      return buttonId === nextExpected;
-    },
-    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+    movePredicate: sequentialMovePredicate,
+    completionPredicate: allButtonsPressedCompletionPredicate,
   },
   4: {
-    movePredicate: (buttonId, currentButtons, movesHistory) => {
-      if (movesHistory.length === 0) return true; // First move is always legal
-      const lastPressedButtonId = movesHistory[movesHistory.length - 1];
-      return !(buttonId === lastPressedButtonId - 1 || buttonId === lastPressedButtonId + 1);
-    },
-    completionPredicate: (currentButtons) => currentButtons.every(button => button.state === 'was-pressed'),
+    movePredicate: nonAdjacentMovePredicate,
+    completionPredicate: allButtonsPressedCompletionPredicate,
   },
 };
 
@@ -103,7 +123,7 @@ function App() {
     if (!levelDef) return; // Should not happen
 
     setButtons(prevButtons => {
-      const isMoveLegal = levelDef.movePredicate(buttonId, prevButtons, movesHistory);
+      const isMoveLegal = levelDef.movePredicate ? levelDef.movePredicate(buttonId, prevButtons, movesHistory) : true;
 
       if (isMoveLegal) {
         const newButtons = prevButtons.map(button => {
@@ -195,7 +215,7 @@ function App() {
         <div className="game-container">
           <div className="grid-item empty-area"></div>
           <div className="grid-item level-header"><h2>Level {level}</h2></div>
-          <div className="grid-item rules-box"><Rules level={level} /></div>
+          <div className="grid-item rules-box"><Rules movePredicateDescription={levelDefinitions[level].movePredicate?.description} completionPredicateDescription={levelDefinitions[level].completionPredicate.description} /></div>
           <div className="grid-item puzzle-box">
             <div className="puzzle">
               {buttons.map(button => (
