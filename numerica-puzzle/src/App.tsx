@@ -41,22 +41,19 @@ const sequentialMovePredicate: MovePredicate = Object.assign(
       return buttonId === 1 || buttonId === 5;
     } else {
       const lastPressedButtonId = movesHistory[movesHistory.length - 1];
-      let expectedNext: number;
+      let establishedDirection: number;
 
-      // Determine direction from the first two moves, or infer from the first if only one move
       if (movesHistory.length === 1) {
-        // If only one move, and it was 1, assume ascending. If 5, assume descending.
-        if (movesHistory[0] === 1) {
-          expectedNext = lastPressedButtonId + 1;
-        } else { // movesHistory[0] === 5
-          expectedNext = lastPressedButtonId - 1;
-        }
+        // Establish direction based on the first move
+        establishedDirection = (movesHistory[0] === 1) ? 1 : -1;
       } else {
+        // Maintain established direction from previous moves
         const secondToLastButtonId = movesHistory[movesHistory.length - 2];
-        const direction = lastPressedButtonId - secondToLastButtonId;
-        expectedNext = lastPressedButtonId + direction;
+        establishedDirection = lastPressedButtonId - secondToLastButtonId;
       }
-      return buttonId === expectedNext;
+
+      // Check if the current button press follows the established direction
+      return buttonId === lastPressedButtonId + establishedDirection;
     }
   },
   { description: 'Buttons must be pressed in sequential order.' }
@@ -150,6 +147,7 @@ function App() {
     if (!levelDef) return; // Should not happen
 
     setButtons(prevButtons => {
+      const potentialMovesHistory = [...movesHistory, buttonId]; // Calculate potential history
       const isMoveLegal = levelDef.movePredicate ? levelDef.movePredicate(buttonId, prevButtons, movesHistory) : true;
 
       if (isMoveLegal) {
@@ -160,9 +158,9 @@ function App() {
           return button;
         });
 
-        setMovesHistory(prevHistory => [...prevHistory, buttonId]);
+        setMovesHistory(potentialMovesHistory); // Update state with potential history
 
-        const isLevelCompleted = levelDef.completionPredicate(newButtons, movesHistory);
+        const isLevelCompleted = levelDef.completionPredicate(newButtons, potentialMovesHistory); // Use potential history
 
         if (isLevelCompleted && !levelCompletedRef.current) {
           levelCompletedRef.current = true; // Mark level as completed
