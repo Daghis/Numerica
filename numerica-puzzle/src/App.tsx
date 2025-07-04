@@ -37,22 +37,17 @@ const alwaysTrueMovePredicate: MovePredicate = Object.assign(
 const sequentialMovePredicate: MovePredicate = Object.assign(
   (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => {
     if (movesHistory.length === 0) {
-      // First move: must be 1 or 5
-      return buttonId === 1 || buttonId === 5;
+      // First move: any button is legal
+      return true;
+    } else if (movesHistory.length === 1) {
+      // Second move: establishes direction
+      const firstButton = movesHistory[0];
+      return buttonId === firstButton + 1 || buttonId === firstButton - 1;
     } else {
+      // Subsequent moves: follow established direction
       const lastPressedButtonId = movesHistory[movesHistory.length - 1];
-      let establishedDirection: number;
-
-      if (movesHistory.length === 1) {
-        // Establish direction based on the first move
-        establishedDirection = (movesHistory[0] === 1) ? 1 : -1;
-      } else {
-        // Maintain established direction from previous moves
-        const secondToLastButtonId = movesHistory[movesHistory.length - 2];
-        establishedDirection = lastPressedButtonId - secondToLastButtonId;
-      }
-
-      // Check if the current button press follows the established direction
+      const secondToLastButtonId = movesHistory[movesHistory.length - 2];
+      const establishedDirection = lastPressedButtonId - secondToLastButtonId;
       return buttonId === lastPressedButtonId + establishedDirection;
     }
   },

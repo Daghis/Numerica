@@ -32,42 +32,40 @@ describe('Level Predicates', () => {
     });
   });
 
-  // Level 3: Sequential order (ascending or descending), all pressed completion
+  // Level 3: Sequential order (any first button, then sequential), all pressed completion
   describe('Level 3', () => {
     const level3Def = levelDefinitions[3];
 
-    it('should allow 1 as the first move', () => {
+    it('should allow any button as the first move', () => {
       expect(level3Def.movePredicate(1, createMockButtons(), [])).toBe(true);
-    });
-
-    it('should allow 5 as the first move', () => {
+      expect(level3Def.movePredicate(3, createMockButtons(), [])).toBe(true);
       expect(level3Def.movePredicate(5, createMockButtons(), [])).toBe(true);
     });
 
-    it('should enforce ascending order after 1', () => {
+    it('should enforce ascending order after a first move', () => {
       expect(level3Def.movePredicate(2, createMockButtons([1]), [1])).toBe(true);
+      expect(level3Def.movePredicate(3, createMockButtons([2]), [2])).toBe(true);
+      expect(level3Def.movePredicate(4, createMockButtons([3]), [3])).toBe(true);
+      expect(level3Def.movePredicate(5, createMockButtons([4]), [4])).toBe(true);
+      expect(level3Def.movePredicate(4, createMockButtons([1]), [1])).toBe(false); // Out of order
+    });
+
+    it('should enforce descending order after a first move', () => {
+      expect(level3Def.movePredicate(4, createMockButtons([5]), [5])).toBe(true);
+      expect(level3Def.movePredicate(3, createMockButtons([4]), [4])).toBe(true);
+      expect(level3Def.movePredicate(2, createMockButtons([3]), [3])).toBe(true);
+      expect(level3Def.movePredicate(1, createMockButtons([2]), [2])).toBe(true);
+      expect(level3Def.movePredicate(2, createMockButtons([5]), [5])).toBe(false); // Out of order
+    });
+
+    it('should maintain direction after second move (ascending)', () => {
       expect(level3Def.movePredicate(3, createMockButtons([1, 2]), [1, 2])).toBe(true);
-      expect(level3Def.movePredicate(4, createMockButtons([1, 2, 3]), [1, 2, 3])).toBe(true);
-      expect(level3Def.movePredicate(5, createMockButtons([1, 2, 3, 4]), [1, 2, 3, 4])).toBe(true);
-      expect(level3Def.movePredicate(3, createMockButtons([1]), [1])).toBe(false); // Out of order
+      expect(level3Def.movePredicate(1, createMockButtons([1, 2]), [1, 2])).toBe(false); // Wrong direction
     });
 
-    it('should enforce descending order after 5', () => {
-      expect(level3Def.movePredicate(4, createMockButtons([5]), [5])).toBe(true);
+    it('should maintain direction after second move (descending)', () => {
       expect(level3Def.movePredicate(3, createMockButtons([5, 4]), [5, 4])).toBe(true);
-      expect(level3Def.movePredicate(2, createMockButtons([5, 4, 3]), [5, 4, 3])).toBe(true);
-      expect(level3Def.movePredicate(1, createMockButtons([5, 4, 3, 2]), [5, 4, 3, 2])).toBe(true);
-      expect(level3Def.movePredicate(3, createMockButtons([5]), [5])).toBe(false); // Out of order
-    });
-
-    it('should reject 4 after 5 if not the next in sequence', () => {
-      expect(level3Def.movePredicate(4, createMockButtons([5]), [5])).toBe(true);
-      expect(level3Def.movePredicate(2, createMockButtons([5, 4]), [5, 4])).toBe(false); // 2 is not next after 4
-    });
-
-    it('should not allow incorrect first moves', () => {
-      expect(level3Def.movePredicate(2, createMockButtons(), [])).toBe(false);
-      expect(level3Def.movePredicate(3, createMockButtons(), [])).toBe(false);
+      expect(level3Def.movePredicate(5, createMockButtons([5, 4]), [5, 4])).toBe(false); // Wrong direction
     });
 
     it('should be complete when all buttons are pressed', () => {
