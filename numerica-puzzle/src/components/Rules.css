@@ -1,0 +1,28 @@
+.rules-container {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.rules-container h3 {
+  margin-top: 0;
+  font-size: 1.2em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.rules-container ol {
+  margin: 0;
+  padding-left: 0; /* Remove default padding */
+  list-style-position: inside; /* Keep numbers inside the content flow */
+  text-align: left; /* Align text to the left */
+}
+
+.rules-container li {
+  margin-bottom: 8px;
+  font-size: 1em;
+  line-height: 1.4;
+  text-align: left; /* Ensure list item text is left-aligned */
+}

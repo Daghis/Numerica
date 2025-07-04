@@ -1,0 +1,112 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
+  width: 100vw; /* Take full viewport width */
+  height: auto; /* Adjust height to content */
+  text-align: center;
+}
+
+.game-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to single column for smaller screens */
+  grid-template-rows: auto;
+  grid-template-areas:
+    "level-header"
+    "puzzle-box"
+    "message-box"
+    "rules-box"
+    "main-menu-button-box";
+  width: 100%;
+  max-width: 1200px; /* Set a max-width for the game container */
+  margin: 0 auto; /* Center the game container */
+}
+
+.empty-area { grid-area: empty-area; }
+.level-header { grid-area: level-header; }
+.rules-box { grid-area: rules-box; }
+.puzzle-box { grid-area: puzzle-box; }
+.message-box { grid-area: message-box; }
+.main-menu-button-box { grid-area: main-menu-button-box; }
+
+/* Default styles for rules-box */
+.rules-box {
+  align-items: flex-start; /* Align rules to the top of its cell */
+  width: auto; /* Default to auto width */
+}
+
+@media (min-width: 1000px) {
+  .game-container {
+    grid-template-columns: 1fr 2fr; /* Two columns for larger screens */
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas:
+      "empty-area level-header"
+      "rules-box puzzle-box"
+      "rules-box message-box"
+      "rules-box main-menu-button-box";
+  }
+
+  .rules-box {
+    width: auto; /* Allow rules box to grow with its column */
+  }
+}
+
+.grid-item {
+  /* Removed flex centering from here */
+}
+
+.level-header {
+  grid-area: level-header;
+  justify-self: center;
+}
+
+.rules-box {
+  grid-area: rules-box;
+  align-items: flex-start; /* Align rules to the top of its cell */
+  padding: 0 20px; /* Add left and right padding for margins */
+}
+
+.puzzle-box {
+  grid-area: puzzle-box;
+  justify-self: center; /* Center the puzzle box within its grid area */
+}
+
+.message-box {
+  grid-area: message-box;
+  justify-self: center;
+}
+
+.main-menu-button-box {
+  grid-area: main-menu-button-box;
+  justify-self: center;
+}
+
+/* General button styles */
+button {
+  font-size: 2em;
+  padding: 20px 40px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.main-menu-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.main-menu-button:hover {
+  background-color: #0056b3;
+}
+
+/* Remove previous layout styles */
+.rules-column,
+.puzzle-column,
+.puzzle-container {
+  display: none; /* Hide old layout elements */
+}

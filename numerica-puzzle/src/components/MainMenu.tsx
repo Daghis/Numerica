@@ -1,0 +1,47 @@
+import React from 'react';
+import './MainMenu.css';
+
+interface MainMenuProps {
+  unlockedLevels: number[];
+  onStartGame: () => void;
+  onResumeGame: () => void;
+  onShowLevelSelect: (view: 'main' | 'levelSelect') => void;
+  onSelectLevel: (level: number) => void;
+  currentView: 'main' | 'levelSelect';
+}
+
+const MainMenu: React.FC<MainMenuProps> = ({ unlockedLevels, onStartGame, onResumeGame, onShowLevelSelect, onSelectLevel, currentView }) => {
+  const totalLevels = 4; // Assuming 4 levels for now
+  const levels = Array.from({ length: totalLevels }, (_, i) => i + 1);
+
+  return (
+    <div className="main-menu">
+      {currentView === 'main' ? (
+        <div className="main-options">
+          <button onClick={onStartGame}>Start</button>
+          <button onClick={onResumeGame} disabled={unlockedLevels.length === 1 && unlockedLevels[0] === 1}>Resume</button>
+          <button onClick={onShowLevelSelect}>Level Select</button>
+        </div>
+      ) : (
+        <>
+          <h2>Select Level</h2>
+          <div className="level-selection">
+            {levels.map(level => (
+              <button
+                key={level}
+                onClick={() => onSelectLevel(level)}
+                disabled={!unlockedLevels.includes(level)}
+                className={unlockedLevels.includes(level) ? 'unlocked' : 'locked'}
+              >
+                Level {level}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => onShowLevelSelect('main')} className="back-button">Back to Main</button>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default MainMenu;

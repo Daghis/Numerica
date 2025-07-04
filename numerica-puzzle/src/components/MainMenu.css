@@ -1,0 +1,76 @@
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.main-options button {
+  font-size: 2em;
+  padding: 20px 40px;
+  margin: 10px;
+  cursor: pointer;
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  background-color: #e0f2ff;
+  color: #007bff;
+}
+
+.main-options button:hover:not(:disabled) {
+  background-color: #007bff;
+  color: white;
+}
+
+.main-options button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  border-color: #999;
+}
+
+.level-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.level-selection button {
+  font-size: 1.5em;
+  padding: 15px 30px;
+  margin: 10px;
+  cursor: pointer;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.level-selection button.locked {
+  background-color: #ccc;
+  cursor: not-allowed;
+  border-color: #999;
+}
+
+.level-selection button.unlocked:hover {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.back-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background-color: #5a6268;
+}
