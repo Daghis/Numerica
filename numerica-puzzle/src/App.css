@@ -99,6 +99,7 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  min-width: 120px; /* Set a minimum width to prevent size changes */
 }
 
 .main-menu-button:hover {

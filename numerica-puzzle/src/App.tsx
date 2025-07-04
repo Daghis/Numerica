@@ -96,6 +96,7 @@ function App() {
   const [areButtonsClickable, setAreButtonsClickable] = useState(true);
   const [lastPressedButtonId, setLastPressedButtonId] = useState<number | null>(null);
   const [movesHistory, setMovesHistory] = useState<number[]>([]); // New state for move history
+  const [isLevelFailed, setIsLevelFailed] = useState(false); // New state for level failure
   const levelCompletedRef = useRef(false);
 
   const [unlockedLevels, setUnlockedLevels] = useState<number[]>(() => {
@@ -118,6 +119,7 @@ function App() {
       setLastPressedButtonId(null); // Reset last pressed button for new level
       setMovesHistory([]); // Reset move history for new level
       setMessage(''); // Clear message when starting a new level
+      setIsLevelFailed(false); // Reset level failed state
 
       if (level === 1) {
         setButtons([{ id: 1, label: '1', state: 'pressable' }]);
@@ -170,7 +172,7 @@ function App() {
         return newButtons;
       } else {
         // Incorrect button pressed
-        setMessage('Error: Incorrect button pressed! Level restarting...');
+        setMessage('Error: Incorrect button pressed!');
         setAreButtonsClickable(false); // Disable buttons on error
         const newButtons = prevButtons.map(button => {
           if (button.id === buttonId) {
@@ -178,15 +180,18 @@ function App() {
           }
           return button;
         });
-        setTimeout(() => {
-          setButtons(prevButtons.map(button => ({ ...button, state: 'pressable' })));
-          setMovesHistory([]); // Reset move history on error
-          setMessage('');
-          setAreButtonsClickable(true); // Re-enable buttons after reset
-        }, 1500);
+        setIsLevelFailed(true); // Set level failed state
         return newButtons;
       }
     });
+  };
+
+  const handleRestartLevel = () => {
+    setButtons(prevButtons => prevButtons.map(button => ({ ...button, state: 'pressable' })));
+    setMovesHistory([]);
+    setMessage('');
+    setAreButtonsClickable(true);
+    setIsLevelFailed(false);
   };
 
   const handleNextLevel = () => {
@@ -252,13 +257,22 @@ function App() {
           </div>
           <div className="grid-item message-box"><p className={`message ${message.includes('Error') ? 'error' : ''} ${message ? '' : 'hidden'}`}>{message}</p></div>
           <div className="grid-item main-menu-button-box">
-            <button
-              onClick={handleNextLevel}
-              disabled={!levelCompletedRef.current || level + 1 > totalLevels}
-              className="main-menu-button"
-            >
-              Next Level
-            </button>
+            {isLevelFailed ? (
+              <button
+                onClick={handleRestartLevel}
+                className="main-menu-button button--error"
+              >
+                Restart
+              </button>
+            ) : (
+              <button
+                onClick={handleNextLevel}
+                disabled={!levelCompletedRef.current || level + 1 > totalLevels}
+                className="main-menu-button"
+              >
+                Next Level
+              </button>
+            )}
             <button onClick={() => setGameState('menu')} className="main-menu-button">Main Menu</button>
           </div>
         </div>
