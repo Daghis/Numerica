@@ -29,10 +29,35 @@ interface LevelDefinition {
   completionPredicate: CompletionPredicate;
 }
 
+const alwaysTrueMovePredicate: MovePredicate = Object.assign(
+  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => true,
+  { description: 'Any button can be pressed.' }
+);
+
 const sequentialMovePredicate: MovePredicate = Object.assign(
   (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => {
-    const nextExpected = movesHistory.length === 0 ? 1 : movesHistory[movesHistory.length - 1] + 1;
-    return buttonId === nextExpected;
+    if (movesHistory.length === 0) {
+      // First move: must be 1 or 5
+      return buttonId === 1 || buttonId === 5;
+    } else {
+      const lastPressedButtonId = movesHistory[movesHistory.length - 1];
+      let expectedNext: number;
+
+      // Determine direction from the first two moves, or infer from the first if only one move
+      if (movesHistory.length === 1) {
+        // If only one move, and it was 1, assume ascending. If 5, assume descending.
+        if (movesHistory[0] === 1) {
+          expectedNext = lastPressedButtonId + 1;
+        } else { // movesHistory[0] === 5
+          expectedNext = lastPressedButtonId - 1;
+        }
+      } else {
+        const secondToLastButtonId = movesHistory[movesHistory.length - 2];
+        const direction = lastPressedButtonId - secondToLastButtonId;
+        expectedNext = lastPressedButtonId + direction;
+      }
+      return buttonId === expectedNext;
+    }
   },
   { description: 'Buttons must be pressed in sequential order.' }
 );
@@ -51,11 +76,13 @@ const allButtonsPressedCompletionPredicate: CompletionPredicate = Object.assign(
   { description: 'All buttons must be pressed.' }
 );
 
-const levelDefinitions: { [key: number]: LevelDefinition } = {
+export const levelDefinitions: { [key: number]: LevelDefinition } = {
   1: {
+    movePredicate: alwaysTrueMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
   2: {
+    movePredicate: alwaysTrueMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
   3: {
