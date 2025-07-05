@@ -68,7 +68,7 @@ const nonAdjacentMovePredicate: MovePredicate = Object.assign(
 );
 
 const oddNumberMovePredicate: MovePredicate = Object.assign(
-  (buttonId: number) => {
+  (buttonId: number, _currentButtons: ButtonData[], _movesHistory: number[]) => {
     return buttonId % 2 !== 0;
   },
   { description: 'Only odd-numbered buttons can be pressed.' }
@@ -107,11 +107,11 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
   5: {
-    movePredicate: oddNumberMovePredicate,
+    movePredicate: Object.assign((buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => oddNumberMovePredicate(buttonId, currentButtons, movesHistory), { description: oddNumberMovePredicate.description }),
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
   6: {
-    movePredicate: Object.assign((buttonId: number) => oddNumberMovePredicate(buttonId), { hiddenRuleId: 'level6MoveRule', description: oddNumberMovePredicate.description }),
+    movePredicate: Object.assign((buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => oddNumberMovePredicate(buttonId, currentButtons, movesHistory), { hiddenRuleId: 'level6MoveRule', description: oddNumberMovePredicate.description }),
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
 };
@@ -127,7 +127,7 @@ function App() {
   const [isLevelFailed, setIsLevelFailed] = useState(false); // New state for level failure
   const levelCompletedRef = useRef(false);
 
-  const { revealRule, resetRevealedRules } = useHiddenRules();
+  const { revealRule } = useHiddenRules();
 
   const [unlockedLevels, setUnlockedLevels] = useState<number[]>(() => {
     const storedLevels = localStorage.getItem('unlockedLevels');
