@@ -93,34 +93,22 @@ describe('Level Predicates', () => {
     });
   });
 
-  // Level 5: Specific sequence completion
+  // Level 5: Odd numbers, all odd buttons pressed completion
   describe('Level 5', () => {
     const level5Def = levelDefinitions[5];
 
-    it('should only allow the first button in the sequence', () => {
+    it('should only allow odd-numbered buttons to be pressed', () => {
       expect(level5Def.movePredicate(1, createMockButtons(), [])).toBe(true);
       expect(level5Def.movePredicate(2, createMockButtons(), [])).toBe(false);
+      expect(level5Def.movePredicate(3, createMockButtons(), [])).toBe(true);
+      expect(level5Def.movePredicate(4, createMockButtons(), [])).toBe(false);
+      expect(level5Def.movePredicate(5, createMockButtons(), [])).toBe(true);
     });
 
-    it('should only allow the second button in the sequence after the first is pressed', () => {
-      expect(level5Def.movePredicate(3, createMockButtons([1]), [1])).toBe(true);
-      expect(level5Def.movePredicate(2, createMockButtons([1]), [1])).toBe(false);
-    });
-
-    it('should only allow the third button in the sequence after the first two are pressed', () => {
-      expect(level5Def.movePredicate(5, createMockButtons([1, 3]), [1, 3])).toBe(true);
-      expect(level5Def.movePredicate(4, createMockButtons([1, 3]), [1, 3])).toBe(false);
-    });
-
-    it('should not allow moves after the sequence is complete', () => {
-      expect(level5Def.movePredicate(1, createMockButtons([1, 3, 5]), [1, 3, 5])).toBe(false);
-    });
-
-    it('should be complete only when the specific sequence [1, 3, 5] is pressed', () => {
-      expect(level5Def.completionPredicate(createMockButtons([1, 3, 5]), [1, 3, 5])).toBe(true);
-      expect(level5Def.completionPredicate(createMockButtons([1, 2, 3]), [1, 2, 3])).toBe(false);
-      expect(level5Def.completionPredicate(createMockButtons([1, 3]), [1, 3])).toBe(false);
-      expect(level5Def.completionPredicate(createMockButtons([1, 3, 5, 2]), [1, 3, 5, 2])).toBe(false);
+    it('should be complete when all odd-numbered buttons are pressed', () => {
+      expect(level5Def.completionPredicate(createMockButtons([1, 3, 5]), [])).toBe(true);
+      expect(level5Def.completionPredicate(createMockButtons([1, 3]), [])).toBe(false);
+      expect(level5Def.completionPredicate(createMockButtons([1, 2, 3, 5]), [])).toBe(true);
     });
   });
 
