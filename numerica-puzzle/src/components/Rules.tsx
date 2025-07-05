@@ -26,14 +26,14 @@ const Rules: React.FC<RulesProps> = ({
   if (isCompletionRuleRevealed) {
     rules.push({ text: completionPredicateDescription, hidden: false });
   } else {
-    rules.push({ text: '', hidden: true }); // Placeholder for hidden completion rule
+    rules.push({ text: '?', hidden: true }); // Placeholder for hidden completion rule
   }
 
   if (movePredicateDescription) {
     if (isMoveRuleRevealed) {
       rules.push({ text: movePredicateDescription, hidden: false });
     } else {
-      rules.push({ text: '', hidden: true }); // Placeholder for hidden move rule
+      rules.push({ text: '?', hidden: true }); // Placeholder for hidden move rule
     }
   }
 
