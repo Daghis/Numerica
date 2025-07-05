@@ -1,3 +1,16 @@
+.button {
+  width: 60px; /* Adjust as needed */
+  height: 60px; /* Adjust as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid #007bff;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
 .button--pressable {
   background-color: #4caf50; /* Green */
   color: white;

@@ -12,7 +12,7 @@ interface MainMenuProps {
 
 const MainMenu: React.FC<MainMenuProps> = ({ unlockedLevels, onStartGame, onResumeGame, onShowLevelSelect, onSelectLevel, currentView }) => {
   const totalLevels = 106;
-  const levels = Array.from({ length: totalLevels - 100 }, (_, i) => i + 101);
+  const levels = [1, 101, 102, 103, 104, 105, 106];
 
   const handleShowLevelSelect: MouseEventHandler<HTMLButtonElement> = () => {
     onShowLevelSelect('levelSelect');
@@ -38,8 +38,8 @@ const MainMenu: React.FC<MainMenuProps> = ({ unlockedLevels, onStartGame, onResu
               <button
                 key={level}
                 onClick={() => onSelectLevel(level)}
-                disabled={!unlockedLevels.includes(level)}
-                className={unlockedLevels.includes(level) ? 'unlocked' : 'locked'}
+                
+                className={'unlocked'}
               >
                 Level {level}
               </button>

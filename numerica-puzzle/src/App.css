@@ -71,6 +71,15 @@
   justify-self: center; /* Center the puzzle box within its grid area */
 }
 
+.puzzle {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
+  justify-content: center;
+  align-items: center;
+  gap: 10px; /* Space between buttons */
+}
+
 .message-box {
   grid-area: message-box;
   justify-self: center;
@@ -86,21 +95,18 @@
 
 /* General button styles */
 button {
-  font-size: 2em;
-  padding: 20px 40px;
   margin: 10px;
   cursor: pointer;
 }
 
 .main-menu-button {
-  padding: 10px 20px;
   font-size: 1em;
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  min-width: 120px; /* Set a minimum width to prevent size changes */
+  
 }
 
 .main-menu-button.button--restart {

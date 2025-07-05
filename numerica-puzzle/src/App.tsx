@@ -90,6 +90,10 @@ const pressAllOddButtonsCompletionPredicate: CompletionPredicate = Object.assign
 
 
 export const levelDefinitions: { [key: number]: LevelDefinition } = {
+  1: {
+    movePredicate: alwaysTrueMovePredicate,
+    completionPredicate: Object.assign((currentButtons: ButtonData[], _movesHistory: number[]) => allButtonsPressedCompletionPredicate(currentButtons, _movesHistory), { description: 'Press the button.' }),
+  },
   101: {
     movePredicate: alwaysTrueMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
@@ -129,10 +133,18 @@ function App() {
 
   const { revealRule } = useHiddenRules();
 
-  const [unlockedLevels, setUnlockedLevels] = useState<number[]>(() => {
+  const [unlockedLevels, setUnlockedLevels] = useState<number[]>([1, 101, 102, 103, 104, 105, 106]);
+
+  useEffect(() => {
     const storedLevels = localStorage.getItem('unlockedLevels');
-    return storedLevels ? JSON.parse(storedLevels) : [101];
-  });
+    if (storedLevels) {
+      setUnlockedLevels(prev => {
+        const newUnlocked = new Set(prev);
+        JSON.parse(storedLevels).forEach((level: number) => newUnlocked.add(level));
+        return Array.from(newUnlocked).sort((a, b) => a - b);
+      });
+    }
+  }, []);
 
   const totalLevels = 106;
 
@@ -148,7 +160,9 @@ function App() {
       setMessage(''); // Clear message when starting a new level
       setIsLevelFailed(false); // Reset level failed state
 
-      if (level === 101) {
+      if (level === 1) {
+        setButtons([{ id: 1, label: '', state: ButtonState.Pressable }]);
+      } else if (level === 101) {
         setButtons([{ id: 1, label: '1', state: ButtonState.Pressable }]);
       } else if (level >= 102 && level <= totalLevels) {
         setButtons([
