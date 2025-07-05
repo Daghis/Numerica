@@ -86,6 +86,19 @@ const createSpecificSequenceCompletionPredicate = (requiredButtonIds: number[]):
   );
 };
 
+const createSpecificSequenceMovePredicate = (requiredButtonIds: number[]): MovePredicate => {
+  return Object.assign(
+    (buttonId: number, _currentButtons: ButtonData[], movesHistory: number[]) => {
+      const nextExpectedButtonIndex = movesHistory.length;
+      if (nextExpectedButtonIndex >= requiredButtonIds.length) {
+        return false; // All required buttons already pressed
+      }
+      return buttonId === requiredButtonIds[nextExpectedButtonIndex];
+    },
+    { description: 'Buttons must be pressed in a specific order.' }
+  );
+};
+
 export const levelDefinitions: { [key: number]: LevelDefinition } = {
   1: {
     movePredicate: alwaysTrueMovePredicate,
@@ -104,7 +117,7 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
   5: {
-    movePredicate: alwaysTrueMovePredicate,
+    movePredicate: createSpecificSequenceMovePredicate([1, 3, 5]),
     completionPredicate: createSpecificSequenceCompletionPredicate([1, 3, 5]),
   },
 };

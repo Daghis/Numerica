@@ -99,9 +99,23 @@ describe('Level Predicates', () => {
   describe('Level 5', () => {
     const level5Def = levelDefinitions[5];
 
-    it('should allow any move', () => {
+    it('should only allow the first button in the sequence', () => {
       expect(level5Def.movePredicate(1, createMockButtons(), [])).toBe(true);
+      expect(level5Def.movePredicate(2, createMockButtons(), [])).toBe(false);
+    });
+
+    it('should only allow the second button in the sequence after the first is pressed', () => {
       expect(level5Def.movePredicate(3, createMockButtons([1]), [1])).toBe(true);
+      expect(level5Def.movePredicate(2, createMockButtons([1]), [1])).toBe(false);
+    });
+
+    it('should only allow the third button in the sequence after the first two are pressed', () => {
+      expect(level5Def.movePredicate(5, createMockButtons([1, 3]), [1, 3])).toBe(true);
+      expect(level5Def.movePredicate(4, createMockButtons([1, 3]), [1, 3])).toBe(false);
+    });
+
+    it('should not allow moves after the sequence is complete', () => {
+      expect(level5Def.movePredicate(1, createMockButtons([1, 3, 5]), [1, 3, 5])).toBe(false);
     });
 
     it('should be complete only when the specific sequence [1, 3, 5] is pressed', () => {
