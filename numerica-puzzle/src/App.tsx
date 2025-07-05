@@ -64,9 +64,24 @@ const nonAdjacentMovePredicate: MovePredicate = Object.assign(
   { description: 'Buttons must be pressed in a non-adjacent order.' }
 );
 
+const oddNumberMovePredicate: MovePredicate = Object.assign(
+  (buttonId: number) => {
+    return buttonId % 2 !== 0;
+  },
+  { description: 'Only odd-numbered buttons can be pressed.' }
+);
+
 const allButtonsPressedCompletionPredicate: CompletionPredicate = Object.assign(
   (currentButtons: ButtonData[], _movesHistory: number[]) => currentButtons.every(button => button.state === ButtonState.WasPressed),
   { description: 'All buttons must be pressed.' }
+);
+
+const pressAllOddButtonsCompletionPredicate: CompletionPredicate = Object.assign(
+  (currentButtons: ButtonData[]) => {
+    const oddButtons = currentButtons.filter(button => button.id % 2 !== 0);
+    return oddButtons.every(button => button.state === ButtonState.WasPressed);
+  },
+  { description: 'Press all the right buttons.' }
 );
 
 const createSpecificSequenceCompletionPredicate = (requiredButtonIds: number[]): CompletionPredicate => {
@@ -120,6 +135,10 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
     movePredicate: createSpecificSequenceMovePredicate([1, 3, 5]),
     completionPredicate: createSpecificSequenceCompletionPredicate([1, 3, 5]),
   },
+  6: {
+    movePredicate: oddNumberMovePredicate,
+    completionPredicate: pressAllOddButtonsCompletionPredicate,
+  },
 };
 
 function App() {
@@ -138,7 +157,7 @@ function App() {
     return storedLevels ? JSON.parse(storedLevels) : [1];
   });
 
-  const totalLevels = 5;
+  const totalLevels = 6;
 
   useEffect(() => {
     localStorage.setItem('unlockedLevels', JSON.stringify(unlockedLevels));
@@ -161,6 +180,18 @@ function App() {
           { id: 3, label: '3', state: ButtonState.Pressable },
           { id: 4, label: '4', state: ButtonState.Pressable },
           { id: 5, label: '5', state: ButtonState.Pressable },
+        ]);
+      } else if (level === 6) {
+        setButtons([
+          { id: 1, label: '1', state: ButtonState.Pressable },
+          { id: 2, label: '2', state: ButtonState.Pressable },
+          { id: 3, label: '3', state: ButtonState.Pressable },
+          { id: 4, label: '4', state: ButtonState.Pressable },
+          { id: 5, label: '5', state: ButtonState.Pressable },
+          { id: 6, label: '6', state: ButtonState.Pressable },
+          { id: 7, label: '7', state: ButtonState.Pressable },
+          { id: 8, label: '8', state: ButtonState.Pressable },
+          { id: 9, label: '9', state: ButtonState.Pressable },
         ]);
       } else if (level > totalLevels) {
         // If all levels are completed, go back to menu
