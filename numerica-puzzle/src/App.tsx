@@ -239,7 +239,6 @@ function App() {
     setMessage('');
     setAreButtonsClickable(true);
     setIsLevelFailed(false);
-    resetRevealedRules(); // Reset revealed rules on restart
   };
 
   const handleNextLevel = () => {
