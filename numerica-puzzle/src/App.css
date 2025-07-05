@@ -80,6 +80,8 @@
 .main-menu-button-box {
   grid-area: main-menu-button-box;
   justify-self: center;
+  display: flex;
+  gap: 10px; /* Add space between buttons */
 }
 
 /* General button styles */
@@ -91,7 +93,6 @@ button {
 }
 
 .main-menu-button {
-  margin-top: 20px;
   padding: 10px 20px;
   font-size: 1em;
   background-color: #007bff;
@@ -100,6 +101,24 @@ button {
   border-radius: 5px;
   cursor: pointer;
   min-width: 120px; /* Set a minimum width to prevent size changes */
+}
+
+.main-menu-button.button--restart {
+  background-color: #ffc107; /* Yellow color */
+  color: #212529;
+}
+
+.main-menu-button.button--restart:hover {
+  background-color: #e0a800;
+}
+
+.main-menu-button.button--error {
+  background-color: #dc3545; /* Red color */
+  color: white;
+}
+
+.main-menu-button.button--error:hover {
+  background-color: #c82333;
 }
 
 .main-menu-button:hover {

@@ -288,22 +288,19 @@ function App() {
           </div>
           <div className="grid-item message-box"><p className={`message ${message.includes('Error') ? 'error' : ''} ${message ? '' : 'hidden'}`}>{message}</p></div>
           <div className="grid-item main-menu-button-box">
-            {isLevelFailed ? (
-              <button
-                onClick={handleRestartLevel}
-                className="main-menu-button button--error"
-              >
-                Restart
-              </button>
-            ) : (
-              <button
-                onClick={handleNextLevel}
-                disabled={!levelCompletedRef.current || level + 1 > totalLevels}
-                className="main-menu-button"
-              >
-                Next Level
-              </button>
-            )}
+            <button
+              onClick={handleRestartLevel}
+              className={`main-menu-button ${isLevelFailed ? 'button--error' : 'button--restart'}`}
+            >
+              Restart
+            </button>
+            <button
+              onClick={handleNextLevel}
+              disabled={!levelCompletedRef.current || level + 1 > totalLevels}
+              className="main-menu-button"
+            >
+              Next Level
+            </button>
             <button onClick={() => setGameState('menu')} className="main-menu-button">Main Menu</button>
           </div>
         </div>
