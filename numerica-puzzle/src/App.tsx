@@ -69,6 +69,23 @@ const allButtonsPressedCompletionPredicate: CompletionPredicate = Object.assign(
   { description: 'All buttons must be pressed.' }
 );
 
+const createSpecificSequenceCompletionPredicate = (requiredButtonIds: number[]): CompletionPredicate => {
+  return Object.assign(
+    (currentButtons: ButtonData[], movesHistory: number[]) => {
+      if (movesHistory.length !== requiredButtonIds.length) {
+        return false;
+      }
+      for (let i = 0; i < requiredButtonIds.length; i++) {
+        if (movesHistory[i] !== requiredButtonIds[i]) {
+          return false;
+        }
+      }
+      return true;
+    },
+    { description: 'A specific sequence of buttons must be pressed.' }
+  );
+};
+
 export const levelDefinitions: { [key: number]: LevelDefinition } = {
   1: {
     movePredicate: alwaysTrueMovePredicate,
@@ -85,6 +102,10 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
   4: {
     movePredicate: nonAdjacentMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
+  },
+  5: {
+    movePredicate: alwaysTrueMovePredicate,
+    completionPredicate: createSpecificSequenceCompletionPredicate([1, 3, 5]),
   },
 };
 
@@ -104,7 +125,7 @@ function App() {
     return storedLevels ? JSON.parse(storedLevels) : [1];
   });
 
-  const totalLevels = 4;
+  const totalLevels = 5;
 
   useEffect(() => {
     localStorage.setItem('unlockedLevels', JSON.stringify(unlockedLevels));
