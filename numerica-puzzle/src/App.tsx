@@ -90,27 +90,27 @@ const pressAllOddButtonsCompletionPredicate: CompletionPredicate = Object.assign
 
 
 export const levelDefinitions: { [key: number]: LevelDefinition } = {
-  1: {
+  101: {
     movePredicate: alwaysTrueMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
-  2: {
+  102: {
     movePredicate: alwaysTrueMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
-  3: {
+  103: {
     movePredicate: sequentialMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
-  4: {
+  104: {
     movePredicate: nonAdjacentMovePredicate,
     completionPredicate: allButtonsPressedCompletionPredicate,
   },
-  5: {
+  105: {
     movePredicate: Object.assign((buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => oddNumberMovePredicate(buttonId, currentButtons, movesHistory), { description: oddNumberMovePredicate.description }),
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
-  6: {
+  106: {
     movePredicate: Object.assign((buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => oddNumberMovePredicate(buttonId, currentButtons, movesHistory), { hiddenRuleId: 'level6MoveRule', description: oddNumberMovePredicate.description }),
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
@@ -119,7 +119,7 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
 function App() {
   const [gameState, setGameState] = useState<'menu' | 'playing'>('menu');
   const [mainMenuSubView, setMainMenuSubView] = useState<'main' | 'levelSelect'>('main');
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(101);
   const [buttons, setButtons] = useState<ButtonData[]>([]);
   const [message, setMessage] = useState('');
   const [areButtonsClickable, setAreButtonsClickable] = useState(true);
@@ -131,10 +131,10 @@ function App() {
 
   const [unlockedLevels, setUnlockedLevels] = useState<number[]>(() => {
     const storedLevels = localStorage.getItem('unlockedLevels');
-    return storedLevels ? JSON.parse(storedLevels) : [1];
+    return storedLevels ? JSON.parse(storedLevels) : [101];
   });
 
-  const totalLevels = 6;
+  const totalLevels = 106;
 
   useEffect(() => {
     localStorage.setItem('unlockedLevels', JSON.stringify(unlockedLevels));
@@ -148,9 +148,9 @@ function App() {
       setMessage(''); // Clear message when starting a new level
       setIsLevelFailed(false); // Reset level failed state
 
-      if (level === 1) {
+      if (level === 101) {
         setButtons([{ id: 1, label: '1', state: ButtonState.Pressable }]);
-      } else if (level >= 2 && level <= totalLevels) {
+      } else if (level >= 102 && level <= totalLevels) {
         setButtons([
           { id: 1, label: '1', state: ButtonState.Pressable },
           { id: 2, label: '2', state: ButtonState.Pressable },
@@ -158,7 +158,7 @@ function App() {
           { id: 4, label: '4', state: ButtonState.Pressable },
           { id: 5, label: '5', state: ButtonState.Pressable },
         ]);
-      } else if (level === 6) {
+      } else if (level === 106) {
         setButtons([
           { id: 1, label: '1', state: ButtonState.Pressable },
           { id: 2, label: '2', state: ButtonState.Pressable },
@@ -250,15 +250,15 @@ function App() {
   };
 
   const handleStartGame = () => {
-    setLevel(1);
+    setLevel(101);
     setGameState('playing');
     setMainMenuSubView('main'); // Reset subview
   };
 
   const handleResumeGame = () => {
-    const firstUncompletedLevel = Array.from({ length: totalLevels }, (_, i) => i + 1)
+    const firstUncompletedLevel = Array.from({ length: totalLevels - 100 }, (_, i) => i + 101)
       .find(lvl => !unlockedLevels.includes(lvl) || (unlockedLevels.includes(lvl) && lvl === Math.max(...unlockedLevels)));
-    setLevel(firstUncompletedLevel || 1);
+    setLevel(firstUncompletedLevel || 101);
     setGameState('playing');
     setMainMenuSubView('main'); // Reset subview
   };

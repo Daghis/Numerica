@@ -15,8 +15,8 @@ const createMockButtons = (pressedIds: number[] = [], count = 5): ButtonData[] =
 
 describe('Level Predicates', () => {
   // Level 1 & 2: Any order, all pressed completion
-  describe('Level 1 & 2', () => {
-    const level1Def = levelDefinitions[1];
+  describe('Level 101 & 102', () => {
+    const level1Def = levelDefinitions[101];
 
     it('should allow any move', () => {
       expect(level1Def.movePredicate(1, createMockButtons(), [])).toBe(true);
@@ -30,8 +30,8 @@ describe('Level Predicates', () => {
   });
 
   // Level 3: Sequential order (any first button, then sequential), all pressed completion
-  describe('Level 3', () => {
-    const level3Def = levelDefinitions[3];
+  describe('Level 103', () => {
+    const level3Def = levelDefinitions[103];
 
     it('should allow any button as the first move', () => {
       expect(level3Def.movePredicate(1, createMockButtons(), [])).toBe(true);
@@ -73,8 +73,8 @@ describe('Level Predicates', () => {
   });
 
   // Level 4: Non-adjacent order, all pressed completion
-  describe('Level 4', () => {
-    const level4Def = levelDefinitions[4];
+  describe('Level 104', () => {
+    const level4Def = levelDefinitions[104];
 
     it('should allow any first move', () => {
       expect(level4Def.movePredicate(1, createMockButtons(), [])).toBe(true);
@@ -94,8 +94,8 @@ describe('Level Predicates', () => {
   });
 
   // Level 5: Odd numbers, all odd buttons pressed completion
-  describe('Level 5', () => {
-    const level5Def = levelDefinitions[5];
+  describe('Level 105', () => {
+    const level5Def = levelDefinitions[105];
 
     it('should only allow odd-numbered buttons to be pressed', () => {
       expect(level5Def.movePredicate(1, createMockButtons(), [])).toBe(true);
@@ -113,8 +113,8 @@ describe('Level Predicates', () => {
   });
 
   // Level 6: Odd numbers, all odd buttons pressed completion
-  describe('Level 6', () => {
-    const level6Def = levelDefinitions[6];
+  describe('Level 106', () => {
+    const level6Def = levelDefinitions[106];
 
     it('should only allow odd-numbered buttons to be pressed', () => {
       expect(level6Def.movePredicate(1, createMockButtons([], 9), [])).toBe(true);
