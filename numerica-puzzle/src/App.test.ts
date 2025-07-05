@@ -2,14 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { levelDefinitions, type ButtonData, ButtonState } from './App';
 
 // Mock ButtonData for testing purposes
-const createMockButtons = (pressedIds: number[] = []): ButtonData[] => {
-  const buttons: ButtonData[] = [
-    { id: 1, label: '1', state: ButtonState.Pressable },
-    { id: 2, label: '2', state: ButtonState.Pressable },
-    { id: 3, label: '3', state: ButtonState.Pressable },
-    { id: 4, label: '4', state: ButtonState.Pressable },
-    { id: 5, label: '5', state: ButtonState.Pressable },
-  ];
+const createMockButtons = (pressedIds: number[] = [], count = 5): ButtonData[] => {
+  const buttons: ButtonData[] = Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    label: `${i + 1}`,
+    state: ButtonState.Pressable,
+  }));
   return buttons.map(button =>
     pressedIds.includes(button.id) ? { ...button, state: ButtonState.WasPressed } : button
   );
@@ -123,6 +121,29 @@ describe('Level Predicates', () => {
       expect(level5Def.completionPredicate(createMockButtons([1, 2, 3]), [1, 2, 3])).toBe(false);
       expect(level5Def.completionPredicate(createMockButtons([1, 3]), [1, 3])).toBe(false);
       expect(level5Def.completionPredicate(createMockButtons([1, 3, 5, 2]), [1, 3, 5, 2])).toBe(false);
+    });
+  });
+
+  // Level 6: Odd numbers, all odd buttons pressed completion
+  describe('Level 6', () => {
+    const level6Def = levelDefinitions[6];
+
+    it('should only allow odd-numbered buttons to be pressed', () => {
+      expect(level6Def.movePredicate(1, createMockButtons([], 9), [])).toBe(true);
+      expect(level6Def.movePredicate(2, createMockButtons([], 9), [])).toBe(false);
+      expect(level6Def.movePredicate(3, createMockButtons([], 9), [])).toBe(true);
+      expect(level6Def.movePredicate(4, createMockButtons([], 9), [])).toBe(false);
+      expect(level6Def.movePredicate(5, createMockButtons([], 9), [])).toBe(true);
+      expect(level6Def.movePredicate(6, createMockButtons([], 9), [])).toBe(false);
+      expect(level6Def.movePredicate(7, createMockButtons([], 9), [])).toBe(true);
+            expect(level6Def.movePredicate(8, createMockButtons([], 9), [])).toBe(false);
+      expect(level6Def.movePredicate(9, createMockButtons([], 9), [])).toBe(true);
+    });
+
+    it('should be complete when all odd-numbered buttons are pressed', () => {
+      expect(level6Def.completionPredicate(createMockButtons([1, 3, 5, 7, 9], 9), [])).toBe(true);
+      expect(level6Def.completionPredicate(createMockButtons([1, 3, 5, 7], 9), [])).toBe(false);
+      expect(level6Def.completionPredicate(createMockButtons([1, 2, 3, 5, 7, 9], 9), [])).toBe(true);
     });
   });
 });
