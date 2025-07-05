@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { levelDefinitions, ButtonData, ButtonState } from './App';
+import { levelDefinitions, type ButtonData, ButtonState } from './App';
 
 // Mock ButtonData for testing purposes
 const createMockButtons = (pressedIds: number[] = []): ButtonData[] => {
