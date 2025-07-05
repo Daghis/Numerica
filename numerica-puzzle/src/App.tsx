@@ -213,7 +213,6 @@ function App() {
 
         const isLevelCompleted = levelDef.completionPredicate(newButtons, potentialMovesHistory); // Use potential history
 
-        let buttonsAfterCompletion = newButtons;
         if (isLevelCompleted && !levelCompletedRef.current) {
           levelCompletedRef.current = true; // Mark level as completed
           setMessage(`Level ${level} Complete!`);
@@ -225,12 +224,12 @@ function App() {
 
           // Show a checkmark on the button for Level 1 to indicate success
           if (level === 1) {
-            buttonsAfterCompletion = newButtons.map(btn =>
+            return newButtons.map(btn =>
               btn.id === buttonId ? { ...btn, label: '✅' } : btn
             );
           }
         }
-        return buttonsAfterCompletion;
+        return newButtons;
       } else {
         // Incorrect button pressed
         setMessage('Error: Incorrect button pressed!');
