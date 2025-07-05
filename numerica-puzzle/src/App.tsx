@@ -111,7 +111,7 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
   6: {
-    movePredicate: Object.assign(oddNumberMovePredicate, { hiddenRuleId: 'level6MoveRule' }),
+    movePredicate: Object.assign((buttonId: number) => oddNumberMovePredicate(buttonId), { hiddenRuleId: 'level6MoveRule', description: oddNumberMovePredicate.description }),
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
 };
