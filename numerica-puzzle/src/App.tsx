@@ -221,6 +221,13 @@ function App() {
             const newUnlocked = new Set([...prev, level + 1]);
             return Array.from(newUnlocked).sort((a, b) => a - b);
           });
+
+          // Show a checkmark on the button for Level 1 to indicate success
+          if (level === 1) {
+            return newButtons.map(btn =>
+              btn.id === buttonId ? { ...btn, label: '✅' } : btn
+            );
+          }
         }
         return newButtons;
       } else {
@@ -248,7 +255,14 @@ function App() {
   };
 
   const handleRestartLevel = () => {
-    setButtons(prevButtons => prevButtons.map(button => ({ ...button, state: ButtonState.Pressable })));
+    setButtons(prevButtons =>
+      prevButtons.map(button => ({
+        ...button,
+        state: ButtonState.Pressable,
+        // Reset the label for Level 1 when restarting
+        label: level === 1 ? '' : button.label,
+      }))
+    );
     setMovesHistory([]);
     setMessage('');
     setAreButtonsClickable(true);
