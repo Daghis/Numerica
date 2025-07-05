@@ -24,16 +24,16 @@ const Rules: React.FC<RulesProps> = ({
   const isCompletionRuleRevealed = completionPredicateHiddenRuleId ? revealedRules[completionPredicateHiddenRuleId] : true;
 
   if (isCompletionRuleRevealed) {
-    rules.push(completionPredicateDescription);
+    rules.push({ text: completionPredicateDescription, hidden: false });
   } else {
-    rules.push('1.'); // Placeholder for hidden completion rule
+    rules.push({ text: '', hidden: true }); // Placeholder for hidden completion rule
   }
 
   if (movePredicateDescription) {
     if (isMoveRuleRevealed) {
-      rules.push(movePredicateDescription);
+      rules.push({ text: movePredicateDescription, hidden: false });
     } else {
-      rules.push('2.'); // Placeholder for hidden move rule
+      rules.push({ text: '', hidden: true }); // Placeholder for hidden move rule
     }
   }
 
@@ -42,7 +42,7 @@ const Rules: React.FC<RulesProps> = ({
       <h3>Rules</h3>
       <ol>
         {rules.map((rule, index) => (
-          <li key={index}>{rule}</li>
+          <li key={index} className={rule.hidden ? 'hidden-rule' : ''}>{rule.text}</li>
         ))}
       </ol>
     </div>

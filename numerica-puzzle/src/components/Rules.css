@@ -26,3 +26,7 @@
   line-height: 1.4;
   text-align: left; /* Ensure list item text is left-aligned */
 }
+
+.rules-container li.hidden-rule {
+  list-style-type: none;
+}
