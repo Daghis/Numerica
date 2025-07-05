@@ -20,13 +20,15 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: numerica-puzzle
 
       - name: Build
         run: npm run build
+        working-directory: numerica-puzzle
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./numerica-puzzle/dist
           cname: daghis.github.io
