@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { Button, MainMenu, Rules } from './components';
 
+export enum ButtonState {
+  Pressable = 'pressable',
+  WasPressed = 'was-pressed',
+  Disabled = 'disabled',
+  Error = 'error',
+}
 
-
-
-
-type ButtonState = 'pressable' | 'was-pressed' | 'disabled' | 'error';
-
-interface ButtonData {
+export interface ButtonData {
   id: number;
   label: string;
   state: ButtonState;
@@ -30,12 +31,12 @@ interface LevelDefinition {
 }
 
 const alwaysTrueMovePredicate: MovePredicate = Object.assign(
-  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => true,
-  { /* No description for this predicate */ }
+  (buttonId: number, _currentButtons: ButtonData[], _movesHistory: number[]) => true,
+  { description: 'Any button can be pressed in any order.' }
 );
 
 const sequentialMovePredicate: MovePredicate = Object.assign(
-  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => {
+  (buttonId: number, _currentButtons: ButtonData[], movesHistory: number[]) => {
     if (movesHistory.length === 0) {
       // First move: any button is legal
       return true;
@@ -55,7 +56,7 @@ const sequentialMovePredicate: MovePredicate = Object.assign(
 );
 
 const nonAdjacentMovePredicate: MovePredicate = Object.assign(
-  (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]) => {
+  (buttonId: number, _currentButtons: ButtonData[], movesHistory: number[]) => {
     if (movesHistory.length === 0) return true; // First move is always legal
     const lastPressedButtonId = movesHistory[movesHistory.length - 1];
     return !(buttonId === lastPressedButtonId - 1 || buttonId === lastPressedButtonId + 1);
@@ -64,7 +65,7 @@ const nonAdjacentMovePredicate: MovePredicate = Object.assign(
 );
 
 const allButtonsPressedCompletionPredicate: CompletionPredicate = Object.assign(
-  (currentButtons: ButtonData[]) => currentButtons.every(button => button.state === 'was-pressed'),
+  (currentButtons: ButtonData[], _movesHistory: number[]) => currentButtons.every(button => button.state === ButtonState.WasPressed),
   { description: 'All buttons must be pressed.' }
 );
 
@@ -94,7 +95,6 @@ function App() {
   const [buttons, setButtons] = useState<ButtonData[]>([]);
   const [message, setMessage] = useState('');
   const [areButtonsClickable, setAreButtonsClickable] = useState(true);
-  const [lastPressedButtonId, setLastPressedButtonId] = useState<number | null>(null);
   const [movesHistory, setMovesHistory] = useState<number[]>([]); // New state for move history
   const [isLevelFailed, setIsLevelFailed] = useState(false); // New state for level failure
   const levelCompletedRef = useRef(false);
@@ -103,8 +103,6 @@ function App() {
     const storedLevels = localStorage.getItem('unlockedLevels');
     return storedLevels ? JSON.parse(storedLevels) : [1];
   });
-
-  const nextExpectedButton = buttons.filter(button => button.state === 'was-pressed').length + 1;
 
   const totalLevels = 4;
 
@@ -116,20 +114,19 @@ function App() {
     if (gameState === 'playing') {
       levelCompletedRef.current = false; // Reset on level change
       setAreButtonsClickable(true); // Enable buttons for new level
-      setLastPressedButtonId(null); // Reset last pressed button for new level
       setMovesHistory([]); // Reset move history for new level
       setMessage(''); // Clear message when starting a new level
       setIsLevelFailed(false); // Reset level failed state
 
       if (level === 1) {
-        setButtons([{ id: 1, label: '1', state: 'pressable' }]);
+        setButtons([{ id: 1, label: '1', state: ButtonState.Pressable }]);
       } else if (level >= 2 && level <= totalLevels) {
         setButtons([
-          { id: 1, label: '1', state: 'pressable' },
-          { id: 2, label: '2', state: 'pressable' },
-          { id: 3, label: '3', state: 'pressable' },
-          { id: 4, label: '4', state: 'pressable' },
-          { id: 5, label: '5', state: 'pressable' },
+          { id: 1, label: '1', state: ButtonState.Pressable },
+          { id: 2, label: '2', state: ButtonState.Pressable },
+          { id: 3, label: '3', state: ButtonState.Pressable },
+          { id: 4, label: '4', state: ButtonState.Pressable },
+          { id: 5, label: '5', state: ButtonState.Pressable },
         ]);
       } else if (level > totalLevels) {
         // If all levels are completed, go back to menu
@@ -151,7 +148,7 @@ function App() {
       if (isMoveLegal) {
         const newButtons = prevButtons.map(button => {
           if (button.id === buttonId) {
-            return { ...button, state: 'was-pressed' as ButtonState };
+            return { ...button, state: ButtonState.WasPressed };
           }
           return button;
         });
@@ -176,7 +173,7 @@ function App() {
         setAreButtonsClickable(false); // Disable buttons on error
         const newButtons = prevButtons.map(button => {
           if (button.id === buttonId) {
-            return { ...button, state: 'error' as ButtonState };
+            return { ...button, state: ButtonState.Error };
           }
           return button;
         });
@@ -187,7 +184,7 @@ function App() {
   };
 
   const handleRestartLevel = () => {
-    setButtons(prevButtons => prevButtons.map(button => ({ ...button, state: 'pressable' })));
+    setButtons(prevButtons => prevButtons.map(button => ({ ...button, state: ButtonState.Pressable })));
     setMovesHistory([]);
     setMessage('');
     setAreButtonsClickable(true);

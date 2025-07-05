@@ -1,4 +1,4 @@
-import React from 'react';
+import { MouseEventHandler } from 'react';
 import './MainMenu.css';
 
 interface MainMenuProps {
@@ -14,13 +14,21 @@ const MainMenu: React.FC<MainMenuProps> = ({ unlockedLevels, onStartGame, onResu
   const totalLevels = 4; // Assuming 4 levels for now
   const levels = Array.from({ length: totalLevels }, (_, i) => i + 1);
 
+  const handleShowLevelSelect: MouseEventHandler<HTMLButtonElement> = () => {
+    onShowLevelSelect('levelSelect');
+  };
+
+  const handleBackToMain: MouseEventHandler<HTMLButtonElement> = () => {
+    onShowLevelSelect('main');
+  };
+
   return (
     <div className="main-menu">
       {currentView === 'main' ? (
         <div className="main-options">
           <button onClick={onStartGame}>Start</button>
           <button onClick={onResumeGame} disabled={unlockedLevels.length === 1 && unlockedLevels[0] === 1}>Resume</button>
-          <button onClick={onShowLevelSelect}>Level Select</button>
+          <button onClick={handleShowLevelSelect}>Level Select</button>
         </div>
       ) : (
         <>
@@ -37,7 +45,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ unlockedLevels, onStartGame, onResu
               </button>
             ))}
           </div>
-          <button onClick={() => onShowLevelSelect('main')} className="back-button">Back to Main</button>
+          <button onClick={handleBackToMain} className="back-button">Back to Main</button>
         </>
       )}
     </div>

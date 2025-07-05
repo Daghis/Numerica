@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { levelDefinitions } from './App';
+import { levelDefinitions, ButtonData, ButtonState } from './App';
 
 // Mock ButtonData for testing purposes
-const createMockButtons = (pressedIds: number[] = []) => {
-  const buttons = [
-    { id: 1, label: '1', state: 'pressable' },
-    { id: 2, label: '2', state: 'pressable' },
-    { id: 3, label: '3', state: 'pressable' },
-    { id: 4, label: '4', state: 'pressable' },
-    { id: 5, label: '5', state: 'pressable' },
+const createMockButtons = (pressedIds: number[] = []): ButtonData[] => {
+  const buttons: ButtonData[] = [
+    { id: 1, label: '1', state: ButtonState.Pressable },
+    { id: 2, label: '2', state: ButtonState.Pressable },
+    { id: 3, label: '3', state: ButtonState.Pressable },
+    { id: 4, label: '4', state: ButtonState.Pressable },
+    { id: 5, label: '5', state: ButtonState.Pressable },
   ];
   return buttons.map(button =>
-    pressedIds.includes(button.id) ? { ...button, state: 'was-pressed' } : button
+    pressedIds.includes(button.id) ? { ...button, state: ButtonState.WasPressed } : button
   );
 };
 
@@ -19,7 +19,6 @@ describe('Level Predicates', () => {
   // Level 1 & 2: Any order, all pressed completion
   describe('Level 1 & 2', () => {
     const level1Def = levelDefinitions[1];
-    const level2Def = levelDefinitions[2];
 
     it('should allow any move', () => {
       expect(level1Def.movePredicate(1, createMockButtons(), [])).toBe(true);
