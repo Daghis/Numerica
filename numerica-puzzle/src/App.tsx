@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import { Button, MainMenu, Rules } from './components';
+import { useHiddenRules } from './components/HiddenRulesContext';
 
 export enum ButtonState {
   Pressable = 'pressable',
@@ -18,11 +19,13 @@ export interface ButtonData {
 interface MovePredicate {
   (buttonId: number, currentButtons: ButtonData[], movesHistory: number[]): boolean;
   description: string;
+  hiddenRuleId?: string; // Optional ID for hidden rules
 }
 
 interface CompletionPredicate {
   (currentButtons: ButtonData[], movesHistory: number[]): boolean;
   description: string;
+  hiddenRuleId?: string; // Optional ID for hidden rules
 }
 
 interface LevelDefinition {
@@ -108,7 +111,7 @@ export const levelDefinitions: { [key: number]: LevelDefinition } = {
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
   6: {
-    movePredicate: oddNumberMovePredicate,
+    movePredicate: Object.assign(oddNumberMovePredicate, { hiddenRuleId: 'level6MoveRule' }),
     completionPredicate: pressAllOddButtonsCompletionPredicate,
   },
 };
@@ -123,6 +126,8 @@ function App() {
   const [movesHistory, setMovesHistory] = useState<number[]>([]); // New state for move history
   const [isLevelFailed, setIsLevelFailed] = useState(false); // New state for level failure
   const levelCompletedRef = useRef(false);
+
+  const { revealRule, resetRevealedRules } = useHiddenRules();
 
   const [unlockedLevels, setUnlockedLevels] = useState<number[]>(() => {
     const storedLevels = localStorage.getItem('unlockedLevels');
@@ -215,6 +220,14 @@ function App() {
           return button;
         });
         setIsLevelFailed(true); // Set level failed state
+
+        // Reveal hidden rule if violated
+        if (levelDef.movePredicate?.hiddenRuleId) {
+          revealRule(levelDef.movePredicate.hiddenRuleId);
+        }
+        if (levelDef.completionPredicate?.hiddenRuleId) {
+          revealRule(levelDef.completionPredicate.hiddenRuleId);
+        }
         return newButtons;
       }
     });
@@ -226,6 +239,7 @@ function App() {
     setMessage('');
     setAreButtonsClickable(true);
     setIsLevelFailed(false);
+    resetRevealedRules(); // Reset revealed rules on restart
   };
 
   const handleNextLevel = () => {
@@ -275,7 +289,14 @@ function App() {
         <div className="game-container">
           <div className="grid-item empty-area"></div>
           <div className="grid-item level-header"><h2>Level {level}</h2></div>
-          <div className="grid-item rules-box"><Rules movePredicateDescription={levelDefinitions[level].movePredicate?.description} completionPredicateDescription={levelDefinitions[level].completionPredicate.description} /></div>
+          <div className="grid-item rules-box">
+            <Rules
+              movePredicateDescription={levelDefinitions[level].movePredicate?.description}
+              movePredicateHiddenRuleId={levelDefinitions[level].movePredicate?.hiddenRuleId}
+              completionPredicateDescription={levelDefinitions[level].completionPredicate.description}
+              completionPredicateHiddenRuleId={levelDefinitions[level].completionPredicate.hiddenRuleId}
+            />
+          </div>
           <div className="grid-item puzzle-box">
             <div className="puzzle">
               {buttons.map(button => (

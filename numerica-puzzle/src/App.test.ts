@@ -124,8 +124,12 @@ describe('Level Predicates', () => {
       expect(level6Def.movePredicate(5, createMockButtons([], 9), [])).toBe(true);
       expect(level6Def.movePredicate(6, createMockButtons([], 9), [])).toBe(false);
       expect(level6Def.movePredicate(7, createMockButtons([], 9), [])).toBe(true);
-            expect(level6Def.movePredicate(8, createMockButtons([], 9), [])).toBe(false);
+      expect(level6Def.movePredicate(8, createMockButtons([], 9), [])).toBe(false);
       expect(level6Def.movePredicate(9, createMockButtons([], 9), [])).toBe(true);
+    });
+
+    it('should have a hiddenRuleId for its move predicate', () => {
+      expect(level6Def.movePredicate.hiddenRuleId).toBe('level6MoveRule');
     });
 
     it('should be complete when all odd-numbered buttons are pressed', () => {
