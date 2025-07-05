@@ -71,7 +71,7 @@ const allButtonsPressedCompletionPredicate: CompletionPredicate = Object.assign(
 
 const createSpecificSequenceCompletionPredicate = (requiredButtonIds: number[]): CompletionPredicate => {
   return Object.assign(
-    (currentButtons: ButtonData[], movesHistory: number[]) => {
+    (_currentButtons: ButtonData[], movesHistory: number[]) => {
       if (movesHistory.length !== requiredButtonIds.length) {
         return false;
       }
