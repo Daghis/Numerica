@@ -94,4 +94,21 @@ describe('Level Predicates', () => {
       expect(level4Def.completionPredicate(createMockButtons([1, 3, 5]), [])).toBe(false);
     });
   });
+
+  // Level 5: Specific sequence completion
+  describe('Level 5', () => {
+    const level5Def = levelDefinitions[5];
+
+    it('should allow any move', () => {
+      expect(level5Def.movePredicate(1, createMockButtons(), [])).toBe(true);
+      expect(level5Def.movePredicate(3, createMockButtons([1]), [1])).toBe(true);
+    });
+
+    it('should be complete only when the specific sequence [1, 3, 5] is pressed', () => {
+      expect(level5Def.completionPredicate(createMockButtons([1, 3, 5]), [1, 3, 5])).toBe(true);
+      expect(level5Def.completionPredicate(createMockButtons([1, 2, 3]), [1, 2, 3])).toBe(false);
+      expect(level5Def.completionPredicate(createMockButtons([1, 3]), [1, 3])).toBe(false);
+      expect(level5Def.completionPredicate(createMockButtons([1, 3, 5, 2]), [1, 3, 5, 2])).toBe(false);
+    });
+  });
 });
