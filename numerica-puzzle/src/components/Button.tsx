@@ -12,7 +12,7 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({ state, onClick, label, disabled }) => {
   return (
-    <button className={`button--${state}`} onClick={onClick} disabled={disabled || state === 'disabled' || state === 'was-pressed'}>
+    <button className={`button button--${state}`} onClick={onClick} disabled={disabled || state === 'disabled' || state === 'was-pressed'}>
       {label}
     </button>
   );
