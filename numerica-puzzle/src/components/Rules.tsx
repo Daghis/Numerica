@@ -42,7 +42,7 @@ const Rules: React.FC<RulesProps> = ({
       <h3>Rules</h3>
       <ol>
         {rules.map((rule, index) => (
-          <li key={index} className={rule.hidden ? 'hidden-rule' : ''}>{rule.text}</li>
+          <li key={index}>{rule.text}</li>
         ))}
       </ol>
     </div>
