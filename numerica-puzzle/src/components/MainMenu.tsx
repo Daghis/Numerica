@@ -11,7 +11,7 @@ interface MainMenuProps {
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ unlockedLevels, onStartGame, onResumeGame, onShowLevelSelect, onSelectLevel, currentView }) => {
-  const totalLevels = 4; // Assuming 4 levels for now
+  const totalLevels = 5;
   const levels = Array.from({ length: totalLevels }, (_, i) => i + 1);
 
   const handleShowLevelSelect: MouseEventHandler<HTMLButtonElement> = () => {
