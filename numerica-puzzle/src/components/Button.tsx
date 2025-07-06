@@ -1,7 +1,12 @@
 import React from 'react';
 import './Button.css';
 
-export type ButtonState = 'pressable' | 'was-pressed' | 'disabled' | 'error';
+export type ButtonState =
+  | 'pressable'
+  | 'was-pressed'
+  | 'disabled'
+  | 'error'
+  | 'completed';
 
 interface ButtonProps {
   state: ButtonState;
@@ -11,15 +16,18 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ state, onClick, label, disabled }) => {
-  const isCheckmark = label === '✅';
-
   return (
     <button
       className={`button button--${state}`}
       onClick={onClick}
-      disabled={disabled || state === 'disabled' || state === 'was-pressed'}
+      disabled={
+        disabled ||
+        state === 'disabled' ||
+        state === 'was-pressed' ||
+        state === 'completed'
+      }
     >
-      <span className={isCheckmark ? 'checkmark-label' : undefined}>{label}</span>
+      <span className="button-label">{label}</span>
     </button>
   );
 };
