@@ -11,9 +11,15 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ state, onClick, label, disabled }) => {
+  const isCheckmark = label === '✅';
+
   return (
-    <button className={`button button--${state}`} onClick={onClick} disabled={disabled || state === 'disabled' || state === 'was-pressed'}>
-      {label}
+    <button
+      className={`button button--${state}`}
+      onClick={onClick}
+      disabled={disabled || state === 'disabled' || state === 'was-pressed'}
+    >
+      <span className={isCheckmark ? 'checkmark-label' : undefined}>{label}</span>
     </button>
   );
 };
