@@ -8,12 +8,13 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pages: write
       id-token: write
+      pull-requests: write
     environment:
       name: github-pages
-      url: https://numerica.bluevine.net/pr${{ github.event.pull_request.number }}/
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout
@@ -29,17 +30,17 @@ jobs:
         working-directory: numerica-puzzle
 
       - name: Build
-        run: npm run build -- --base=/pr${{ github.event.pull_request.number }}/
+        run: npm run build
         working-directory: numerica-puzzle
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./numerica-puzzle/dist
-          destination_dir: pr${{ github.event.pull_request.number }}
-          keep_files: true
+          path: ./numerica-puzzle/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Comment preview URL
         uses: peter-evans/create-or-update-comment@v4
@@ -47,5 +48,5 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            Preview URL: https://numerica.bluevine.net/pr${{ github.event.pull_request.number }}/
+            Preview URL: ${{ steps.deployment.outputs.page_url }}
 
