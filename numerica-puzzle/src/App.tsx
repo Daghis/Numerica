@@ -8,6 +8,7 @@ export enum ButtonState {
   WasPressed = 'was-pressed',
   Disabled = 'disabled',
   Error = 'error',
+  Completed = 'completed',
 }
 
 export interface ButtonData {
@@ -226,7 +227,9 @@ function App() {
           });
 
           return newButtons.map(btn =>
-            btn.id === buttonId ? { ...btn, label: '✅' } : btn
+            btn.id === buttonId
+              ? { ...btn, label: '', state: ButtonState.Completed }
+              : btn
           );
         }
         return newButtons;

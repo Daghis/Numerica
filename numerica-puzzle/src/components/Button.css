@@ -32,8 +32,26 @@
   color: white;
 }
 
-/* Larger checkmark when used as button label */
-.checkmark-label {
-  font-size: 3em;
-  line-height: 1;
+/* Completed state with checkmark overlay */
+.button--completed {
+  position: relative;
+  background-color: #4caf50; /* Green */
+  color: white;
 }
+
+.button--completed .button-label {
+  visibility: hidden;
+}
+
+.button--completed::after {
+  content: '\2713';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 2em;
+  line-height: 1;
+  pointer-events: none;
+}
+
