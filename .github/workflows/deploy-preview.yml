@@ -36,3 +36,11 @@ jobs:
           destination_dir: pr${{ github.event.pull_request.number }}
           keep_files: true
 
+      - name: Comment preview URL
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            Preview URL: https://numerica.bluevine.net/pr${{ github.event.pull_request.number }}/
+
