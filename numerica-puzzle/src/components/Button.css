@@ -31,3 +31,9 @@
   background-color: #f44336; /* Red */
   color: white;
 }
+
+/* Larger checkmark when used as button label */
+.checkmark-label {
+  font-size: 3em;
+  line-height: 1;
+}
