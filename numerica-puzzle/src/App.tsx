@@ -33,6 +33,30 @@ interface LevelDefinition {
   completionPredicate: CompletionPredicate;
 }
 
+const getInitialButtonsForLevel = (level: number): ButtonData[] => {
+  if (level === 1) {
+    return [{ id: 1, label: '', state: ButtonState.Pressable }];
+  }
+  if (level === 101) {
+    return [{ id: 1, label: '1', state: ButtonState.Pressable }];
+  }
+  if (level === 106) {
+    return Array.from({ length: 9 }, (_, i) => ({
+      id: i + 1,
+      label: `${i + 1}`,
+      state: ButtonState.Pressable,
+    }));
+  }
+  if (level >= 102 && level <= 105) {
+    return Array.from({ length: 5 }, (_, i) => ({
+      id: i + 1,
+      label: `${i + 1}`,
+      state: ButtonState.Pressable,
+    }));
+  }
+  return [];
+};
+
 const alwaysTrueMovePredicate: MovePredicate = Object.assign(
   (_buttonId: number, _currentButtons: ButtonData[], _movesHistory: number[]) => true,
   { description: '' }
@@ -160,33 +184,11 @@ function App() {
       setMessage(''); // Clear message when starting a new level
       setIsLevelFailed(false); // Reset level failed state
 
-      if (level === 1) {
-        setButtons([{ id: 1, label: '', state: ButtonState.Pressable }]);
-      } else if (level === 101) {
-        setButtons([{ id: 1, label: '1', state: ButtonState.Pressable }]);
-      } else if (level >= 102 && level <= totalLevels) {
-        setButtons([
-          { id: 1, label: '1', state: ButtonState.Pressable },
-          { id: 2, label: '2', state: ButtonState.Pressable },
-          { id: 3, label: '3', state: ButtonState.Pressable },
-          { id: 4, label: '4', state: ButtonState.Pressable },
-          { id: 5, label: '5', state: ButtonState.Pressable },
-        ]);
-      } else if (level === 106) {
-        setButtons([
-          { id: 1, label: '1', state: ButtonState.Pressable },
-          { id: 2, label: '2', state: ButtonState.Pressable },
-          { id: 3, label: '3', state: ButtonState.Pressable },
-          { id: 4, label: '4', state: ButtonState.Pressable },
-          { id: 5, label: '5', state: ButtonState.Pressable },
-          { id: 6, label: '6', state: ButtonState.Pressable },
-          { id: 7, label: '7', state: ButtonState.Pressable },
-          { id: 8, label: '8', state: ButtonState.Pressable },
-          { id: 9, label: '9', state: ButtonState.Pressable },
-        ]);
-      } else if (level > totalLevels) {
+      if (level > totalLevels) {
         // If all levels are completed, go back to menu
         setGameState('menu');
+      } else {
+        setButtons(getInitialButtonsForLevel(level));
       }
     }
   }, [level, gameState, totalLevels]);
@@ -222,12 +224,9 @@ function App() {
             return Array.from(newUnlocked).sort((a, b) => a - b);
           });
 
-          // Show a checkmark on the button for Level 1 to indicate success
-          if (level === 1) {
-            return newButtons.map(btn =>
-              btn.id === buttonId ? { ...btn, label: '✅' } : btn
-            );
-          }
+          return newButtons.map(btn =>
+            btn.id === buttonId ? { ...btn, label: '✅' } : btn
+          );
         }
         return newButtons;
       } else {
@@ -255,14 +254,8 @@ function App() {
   };
 
   const handleRestartLevel = () => {
-    setButtons(prevButtons =>
-      prevButtons.map(button => ({
-        ...button,
-        state: ButtonState.Pressable,
-        // Reset the label for Level 1 when restarting
-        label: level === 1 ? '' : button.label,
-      }))
-    );
+    setButtons(getInitialButtonsForLevel(level));
+    levelCompletedRef.current = false;
     setMovesHistory([]);
     setMessage('');
     setAreButtonsClickable(true);
