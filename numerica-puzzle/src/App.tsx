@@ -218,7 +218,8 @@ function App() {
           setMessage(`Level ${level} Complete!`);
           setAreButtonsClickable(false); // Disable buttons after completion
           setUnlockedLevels(prev => {
-            const newUnlocked = new Set([...prev, level + 1]);
+            const nextLevel = level === 1 ? 101 : level + 1;
+            const newUnlocked = new Set([...prev, nextLevel]);
             return Array.from(newUnlocked).sort((a, b) => a - b);
           });
 
@@ -270,7 +271,9 @@ function App() {
   };
 
   const handleNextLevel = () => {
-    if (level + 1 <= totalLevels) {
+    if (level === 1) {
+      setLevel(101);
+    } else if (level + 1 <= totalLevels) {
       setLevel(prevLevel => prevLevel + 1);
     } else {
       setGameState('menu'); // Go back to menu if all levels are completed
