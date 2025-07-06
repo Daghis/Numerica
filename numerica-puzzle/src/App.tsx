@@ -278,7 +278,8 @@ function App() {
   };
 
   const handleStartGame = () => {
-    setLevel(101);
+    // Start the game from the very first level
+    setLevel(1);
     setGameState('playing');
     setMainMenuSubView('main'); // Reset subview
   };
